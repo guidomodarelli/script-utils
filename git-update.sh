@@ -26,14 +26,13 @@ update () {
     diffs=$(git diff --shortstat origin/"$(git_current_branch)")
 
     if [ -z "$diffs" ]; then
-      printf "%s\n" up-to-date
+      printf "%s\n" "up-to-date"
     else
-      git reset --hard origin/"$(git_current_branch)" > /dev/null
-      printf "\033[92m%s\033[0m\n" updated
+      printf "\033[93m%s\033[0m\n" "to-update (remote)"
     fi
 
   else
-    printf "\033[91m%s\033[0m\n" has-diffs
+    printf "\033[91m%s\033[0m\n" "has-local-diffs"
   fi
 }
 
