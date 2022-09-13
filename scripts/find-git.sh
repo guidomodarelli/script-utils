@@ -10,4 +10,4 @@ get_root() {
 
 root="$(get_root $1)"
 
-find "$root" -name HEAD -execdir test -e refs -a -e objects \; -printf %h\\n | grep -v .git/modules | xargs dirname | sort
+find "$root" -name HEAD -execdir [ -e refs -a -e objects ] \; -printf "%h\n" | grep "/\.git$" | xargs dirname
