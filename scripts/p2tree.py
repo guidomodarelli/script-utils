@@ -29,9 +29,15 @@ def get_path_dict(paths: list):
         parts = path.split("/")
         if parts:
             marcher = new_path_dict
+            flag_exit = False
             for key in parts[:-1]:
-                marcher = marcher[key]
-            marcher[parts[-1]] = parts[-1]
+                if not isinstance(marcher, dict):
+                    flag_exit = True
+                    break
+                else:
+                    marcher = marcher[key]
+            if not flag_exit:
+                marcher[parts[-1]] = parts[-1]
     return default_to_regular(new_path_dict)
 
 
@@ -66,7 +72,12 @@ def tree(paths: dict, prefix: str = "", first: bool = True):
 
 if __name__ == "__main__":
     list = []
-    for arg in sys.argv[1:]:
+    args = sys.argv[1:]
+    if len(args) == 0:
+        print("No args passed")
+        sys.exit(1)
+
+    for arg in args:
         list.append(arg)
 
     result = get_path_dict(list)
