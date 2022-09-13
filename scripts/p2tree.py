@@ -1,44 +1,29 @@
 #!/bin/python3
 
 import sys
-from collections import defaultdict
 
 
-def nested_dict():
-    """
-    Creates a default dictionary where each value is an other default
-    dictionary.
-    """
-    return defaultdict(nested_dict)
+def paths_to_dict(paths: list):
+    root = {}
 
-
-def default_to_regular(d: dict):
-    """
-    Converts defaultdicts of defaultdicts to dict of dicts.
-    """
-    if isinstance(d, defaultdict):
-        d = {k: default_to_regular(v) for k, v in d.items()}
-    return d
-
-
-def get_path_dict(paths: list):
-    new_path_dict = nested_dict()
     for path in paths:
-        if str.startswith(path, "/"):
-            path = str.removeprefix(path, "/")
-        parts = path.split("/")
-        if parts:
-            marcher = new_path_dict
-            flag_exit = False
-            for key in parts[:-1]:
-                if not isinstance(marcher, dict):
-                    flag_exit = True
-                    break
-                else:
-                    marcher = marcher[key]
-            if not flag_exit:
-                marcher[parts[-1]] = parts[-1]
-    return default_to_regular(new_path_dict)
+        # separate by slashes, disregarding the first `/`
+        path = path.lstrip("/").split("/")
+        # pop off the last key-value component
+        key, _, val = path.pop(-1).partition("=")
+        # find the target dict starting from the root
+        target_dict = root
+        is_dict = True
+        for component in path:
+            if not isinstance(target_dict, dict):
+                is_dict = False
+                break
+            target_dict = target_dict.setdefault(component, {})
+        if is_dict:
+            # assign key-value
+            target_dict[key] = val
+
+    return root
 
 
 # prefix components:
@@ -80,6 +65,6 @@ if __name__ == "__main__":
     for arg in args:
         list.append(arg)
 
-    result = get_path_dict(list)
+    result = paths_to_dict(list)
     for line in tree(result):
         print(line)
